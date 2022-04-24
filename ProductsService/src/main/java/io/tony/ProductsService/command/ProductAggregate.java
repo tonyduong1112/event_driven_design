@@ -38,7 +38,9 @@ public class ProductAggregate {
         BeanUtils.copyProperties(createProductCommand, productCreatedEvent);
 
         AggregateLifecycle.apply(productCreatedEvent);
-        if (true) throw new Exception("An error took place in the CreateProductCommand @CommandHandler");
+
+        //Demo purposes for Command Handler handle Exception
+        //if (true) throw new Exception("An error took place in the CreateProductCommand @CommandHandler");
 
     }
 
