@@ -1,6 +1,7 @@
 package io.tony.OrdersService.saga;
 
 import io.tony.OrdersService.core.events.OrderCreatedEvent;
+import io.tony.core.events.ProductReservedEvent;
 import org.axonframework.commandhandling.CommandCallback;
 import org.axonframework.commandhandling.CommandMessage;
 import org.axonframework.commandhandling.CommandResultMessage;
@@ -28,10 +29,15 @@ public class OrderSaga {
         commandGateway.send(reserveProductCommand, new CommandCallback<ReserveProductCommand, Object>() {
             @Override
             public void onResult(CommandMessage<? extends ReserveProductCommand> commandMessage, CommandResultMessage<?> commandResultMessage) {
-                if(commandResultMessage.isExceptional()) {
+                if (commandResultMessage.isExceptional()) {
                     // Start a compensating transaction
                 }
             }
         });
+    }
+
+    @SagaEventHandler(associationProperty = "orderId")
+    public void handle(ProductReservedEvent productReservedEvent) {
+        // Process user payment
     }
 }

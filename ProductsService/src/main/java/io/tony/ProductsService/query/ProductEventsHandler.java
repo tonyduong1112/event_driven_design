@@ -3,6 +3,7 @@ package io.tony.ProductsService.query;
 import io.tony.ProductsService.core.data.ProductEntity;
 import io.tony.ProductsService.core.data.ProductsRepository;
 import io.tony.ProductsService.core.events.ProductCreatedEvent;
+import io.tony.core.events.ProductReservedEvent;
 import org.axonframework.config.ProcessingGroup;
 import org.axonframework.eventhandling.EventHandler;
 import org.axonframework.messaging.interceptors.ExceptionHandler;
@@ -34,8 +35,20 @@ public class ProductEventsHandler {
         ProductEntity productEntity = new ProductEntity();
         BeanUtils.copyProperties(event, productEntity);
 
-        productsRepository.save(productEntity);
+        try {
+            productsRepository.save(productEntity);
+        } catch (IllegalArgumentException ex) {
+            ex.printStackTrace();
+        }
 
-        if (true) throw new Exception("Forcing exception in the Event Handler class");
+// Demo handling exception for Events
+//        if (true) throw new Exception("Forcing exception in the Event Handler class");
+    }
+
+    @EventHandler
+    public void on(ProductReservedEvent productReservedEvent) {
+        ProductEntity productEntity = productsRepository.findByProductId(productReservedEvent.getProductId());
+        productEntity.setQuantity(productEntity.getQuantity() - productReservedEvent.getQuantity());
+        productsRepository.save(productEntity);
     }
 }
